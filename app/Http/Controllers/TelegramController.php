@@ -63,7 +63,8 @@ class TelegramController extends Controller
 
             // Добавляем кнопки по одной в каждую строку
             foreach ($newArray as $date) {
-                $button = InlineKeyboardButton::make($date, callback_data: "group");
+                $line = strval($date);
+                $button = InlineKeyboardButton::make($date, callback_data: "group $currentGroup $line");
                 $keyboard->addRow($button);
             }
             $keyboard->addRow(InlineKeyboardButton::make('Другая группа', callback_data: "other_schedule"),
@@ -80,6 +81,10 @@ class TelegramController extends Controller
         } else {
             return $bot->sendMessage('Введи команду /setgroup {parameter} чтобы указать свою группу для бота.');
         }
+    }
+
+    public function schedule_action_2(Nutgram $bot, $parameter) {
+        return $bot->sendMessage($parameter);
     }
 
     public function schedule_teacher_action(Nutgram $bot) {
@@ -131,7 +136,8 @@ class TelegramController extends Controller
 
             // Добавляем кнопки по одной в каждую строку
             foreach ($newArray as $date) {
-                $button = InlineKeyboardButton::make($date, callback_data: "group");
+                $line = strval($date);
+                $button = InlineKeyboardButton::make($date, callback_data: "teacher  $line");
                 $keyboard->addRow($button);
             }
             $keyboard->addRow(InlineKeyboardButton::make('Другая группа', callback_data: "other_schedule"),
@@ -173,6 +179,10 @@ class TelegramController extends Controller
         }
     }
 
+    public function callback_action_schedule(Nutgram $bot, $group, $parameter) {
+        return $bot->sendMessage("Группа: $group, $parameter");
+    }
+
     // Метод для обработки команды /about
     public function about_action(Nutgram $bot)
     {
@@ -198,12 +208,6 @@ class TelegramController extends Controller
             Log::channel("telegram")->info("Пользователь $id поменял свою группу на $parameter");
             $this->schedule_action($bot);
         }
-    }
-
-    public function callback_action_schedule(Nutgram $bot){
-        return $bot->answerCallbackQuery(
-            text: 'You selected A'
-        );
     }
 }
 

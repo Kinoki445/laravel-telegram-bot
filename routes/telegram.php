@@ -17,10 +17,12 @@ use App\Http\Controllers\TeacherSchedule;
 $bot -> onCommand('start', [TelegramController::class, 'start_action'])->description('The start command!');
 $bot -> onCommand('about_me', [TelegramController::class, 'about_action'])->description('The about command!');
 $bot -> onCommand('schedule', [TelegramController::class, 'schedule_action'])->description('The schedule command!');
+$bot -> onCommand('schedule {parameter}', [TelegramController::class, 'schedule_action_2'])->description('The schedule command!');
 $bot -> onCommand('setgroup {parameter}', [TelegramController::class, 'set_group_action'])->description('The SetGroup command!');
 
 
-$bot->onCallbackQueryData('group', [TelegramController::class,'callback_action_schedule']);
+$bot->onCallbackQueryData('group {group} {parameter}', [TelegramController::class,'callback_action_schedule']);
+$bot->onCallbackQueryData('teacher {teacher} {parameter}', [TelegramController::class,'schedule_teacher_action']);
 
 $bot->onCallbackQueryData('other_schedule', [TelegramController::class,'callback_action_schedule_other']);
 $bot->onCallbackQueryData('teacher_schedule', TeacherSchedule::class);
