@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\TelegramController;
 use App\Http\Controllers\TeacherSchedule;
+use App\Http\Controllers\StudentSchedule;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,7 @@ $bot->onCallbackQueryData('teacher {data} {teacher}', [TelegramController::class
 
 // $bot->onCallbackQueryData('other_schedule', [TelegramController::class,'callback_action_schedule_other']);
 $bot->onCallbackQueryData('teacher_schedule', TeacherSchedule::class);
+$bot->onCallbackQueryData('student_schedule', StudentSchedule::class);
 $bot->onCallbackQueryData('schedule', [TelegramController::class,'schedule_action']);
 $bot->onCallbackQueryData('menu_schedule', [TelegramController::class,'menu_schedule_action']);
 
