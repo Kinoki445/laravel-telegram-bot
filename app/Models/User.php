@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id_user', 'username', 'lastname', 'group',
+        'id_user', 'username', 'lastname', 'group', 'message_id'
     ];
 
     /**
@@ -36,4 +36,16 @@ class User extends Authenticatable
     protected $casts = [
         'id_user' => 'integer',
     ];
+
+    public function getLastMessageId()
+    {
+        $message_id = $this->message_id;
+        return $message_id?$message_id:null;
+    }
+
+    public function setLastMessageId($id)
+    {
+        $this->message_id = $id;
+        $this->save();
+    }
 }

@@ -117,8 +117,12 @@ class TelegramController extends Controller
 
         // Вывод результата
         $text = implode("\n", $result);
-        return $bot->sendMessage(
-            text: "$text",
+        $user = User::where('id_user', $bot->user()->id)->first();
+
+        return $bot->editMessageText(
+            text: $text,
+            chat_id: $bot->chatId(),
+            message_id: $user->GetLastMessageId(),
             reply_markup: $keyboard
         );
     }
@@ -168,8 +172,12 @@ class TelegramController extends Controller
 
         // Вывод результата
         $text = implode("\n", $result);
-        return $bot->sendMessage(
-            text: "$text",
+        $user = User::where('id_user', $bot->user()->id)->first();
+
+        return $bot->editMessageText(
+            text: $text,
+            chat_id: $bot->chatId(),
+            message_id: $user->GetLastMessageId(),
             reply_markup: $keyboard
         );
     }
@@ -245,8 +253,12 @@ class TelegramController extends Controller
 
         // Вывод результата
         $text = implode("\n", $result);
-        return $bot->sendMessage(
-            text: "$text",
+        $user = User::where('id_user', $bot->user()->id)->first();
+
+        return $bot->editMessageText(
+            text: $text,
+            chat_id: $bot->chatId(),
+            message_id: $user->GetLastMessageId(),
             reply_markup: $keyboard
         );
     }
@@ -259,6 +271,7 @@ class TelegramController extends Controller
         $username = $bot->user()->username;
         $lastname = $bot->user()->first_name;
         return $bot->sendMessage("Твой UserID = $id \nТвой Username = @$username \nТвоё First_name = $lastname");
+
     }
 
     public function set_group_action(Nutgram $bot, $parameter){
@@ -323,9 +336,12 @@ class TelegramController extends Controller
         $keyboard->addRow(InlineKeyboardButton::make('Меню', callback_data: "menu_schedule"));
 
         // Вывод результата
+        $user = User::where('id_user', $bot->user()->id)->first();
         $text = implode("\n", $result);
-        return $bot->sendMessage(
-            text: "$text",
+        return $bot->editMessageText(
+            text: $text,
+            chat_id: $bot->chatId(),
+            message_id: $user->GetLastMessageId(),
             reply_markup: $keyboard
         );
     }

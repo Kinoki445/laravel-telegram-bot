@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('username');
             $table->string('lastname');
             $table->string('group')->nullable();
+            $table->integer('message_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
