@@ -14,6 +14,7 @@ class TeacherSchedule extends Conversation
         $message = $bot->sendMessage('Напиши преподователя пример: Зятикова ТЮ');
         $user = User::where('id_user', $bot->user()->id)->first();
         $user->SetLastMessageId($message->message_id);
+        $bot->message()->delete();
         $this->next('secondStep');
     }
 

@@ -63,12 +63,23 @@ class TelegramController extends Controller
 
             // Вывод результата
             $text = implode("\n", $result);
-            return $bot->sendMessage(
-                text: "$text",
+            return $bot->editMessageText(
+                text: $text,
+                chat_id: $bot->chatId(),
+                message_id: $user->GetLastMessageId(),
                 reply_markup: $keyboard
             );
         } else {
-            return $bot->sendMessage('Введи команду /setgroup {parameter} чтобы указать свою группу для бота.');
+            $message = $bot->editMessageText(
+                text:'Введи команду /setgroup {parameter} чтобы указать свою группу для бота.',
+                chat_id: $bot->chatId(),
+                message_id: $user->GetLastMessageId()
+            );
+
+            $user = User::where('id_user', $bot->user()->id)->first();
+            $user->SetLastMessageId($message->message_id);
+
+            return $message;
         }
     }
 
@@ -199,10 +210,34 @@ class TelegramController extends Controller
             Log::channel('telegram')->info('start', ['Зарегистрировался новый пользователь' => ['id'=> $bot->user()->id]]);
 
             // Отправка сообщения пользователю
-            return $bot->sendMessage('Добро пожаловать в бота NTTEK @' . $bot->user()->username);
+            $bot->message()->delete();
+            $message = $bot->sendMessage('Добро пожаловать в бота NTTEK @' . $bot->user()->username);
+            $user->SetLastMessageId($bot->$message->message_id);
+            return $message;
         } else {
-            return $bot->sendMessage('С возвращением в бота NTTEK @' . $bot->user()->username);
+            $bot->message()->delete();
+            $message = $bot->sendMessage('С возвращением в бота NTTEK @' . $bot->user()->username);
+            $user->SetLastMessageId($bot->$message->message_id);
+            return $message;
         }
+    }
+
+    public function menu_schedule(Nutgram $bot, Request $request)
+    {
+        $user = User::where('id_user', $bot->user()->id)->first();
+
+        // Создаем объект разметки клавиатуры
+        $keyboard = InlineKeyboardMarkup::make();
+
+        $keyboard->addRow(InlineKeyboardButton::make('Другая группа', callback_data: "student_schedule"),
+        InlineKeyboardButton::make('Преподователь', callback_data: "teacher_schedule"),
+        InlineKeyboardButton::make('Твоя группа', callback_data: "schedule"));
+        $keyboard->addRow(InlineKeyboardButton::make('Меню', callback_data: "menu_schedule"));
+        return $bot->sendMessage(
+            text: 'Выбери то что хотел вызвать ' . $bot->user()->username,
+            chat_id: $bot->chatId(),
+            reply_markup: $keyboard
+        );
     }
 
     public function callback_action_schedule(Nutgram $bot, $group, $parameter) {
@@ -263,17 +298,6 @@ class TelegramController extends Controller
         );
     }
 
-    // Метод для обработки команды /about
-    public function about_action(Nutgram $bot)
-    {
-        Log::channel('telegram')->info('about_action');
-        $id = $bot->user()->id;
-        $username = $bot->user()->username;
-        $lastname = $bot->user()->first_name;
-        return $bot->sendMessage("Твой UserID = $id \nТвой Username = @$username \nТвоё First_name = $lastname");
-
-    }
-
     public function set_group_action(Nutgram $bot, $parameter){
         $id = $bot->user()->id;
 
@@ -284,6 +308,8 @@ class TelegramController extends Controller
             // Обновить группу пользователя
             $user->group = $parameter;
             $user->save();
+
+            $bot->message()->delete();
 
             // Логирование изменения
             Log::channel("telegram")->info("Пользователь $id поменял свою группу на $parameter");
@@ -345,5 +371,6 @@ class TelegramController extends Controller
             reply_markup: $keyboard
         );
     }
+
 }
 
